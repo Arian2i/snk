@@ -7,7 +7,7 @@ on:
         description: |
           New version for the release
           If the version is in format <major>.<minor>.<patch> a new release is emitted.
-          Otherwise for other format ( for example <major>.<minor>.<patch>-beta.1 ), a prerelease is emitted.
+          Otherwise for other format (for example <major>.<minor>.<patch>-beta.1), a prerelease is emitted.
         default: "0.0.1"
         required: true
         type: string
@@ -43,7 +43,7 @@ jobs:
 
       - name: update action.yml to point to the newly created docker image
         run: |
-          sed -i "s/image: .*/image: docker:\/\/platane\/snk@${{ steps.docker-build.outputs.digest }}/" action.yml
+          sed -i "s|image: .*|image: docker://platane/snk@${{ steps.docker-build.outputs.digest }}|" action.yml
 
       - uses: oven-sh/setup-bun@v1
 
@@ -52,7 +52,7 @@ jobs:
       - name: build svg-only action
         run: |
           npm run build:action
-          rm -r svg-only/dist
+          rm -rf svg-only/dist
           mv packages/action/dist svg-only/dist
 
       - name: bump package version
@@ -71,8 +71,8 @@ jobs:
           git push origin main --tags
 
           if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            git tag v$( echo $VERSION | cut -d. -f 1-1 )
-            git tag v$( echo $VERSION | cut -d. -f 1-2 )
+            git tag v$(echo $VERSION | cut -d. -f 1-1)
+            git tag v$(echo $VERSION | cut -d. -f 1-2)
             git push origin --tags --force
             echo "prerelease=false" >> $GITHUB_OUTPUT
           else
